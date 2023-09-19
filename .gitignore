@@ -30,3 +30,5 @@
 *.exe
 *.out
 *.app
+/.vs/Generator_AD9833/v17
+/.vs
