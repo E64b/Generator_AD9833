@@ -12,47 +12,32 @@ TM1637Display display(CLK, DIO);
 
 uint16_t freq = 30000;
 uint32_t period = 0;
+volatile uint16_t cnt_ovf = 0;
+inline __attribute__((always_inline))
+
+void test(void){
+    asm("nop");
+}
+
 
 void setup(){
     gen.Begin();
-    display.setBrightness(0x0f); // Установка яркости дисплея   
-    pinMode(3, OUTPUT);
+    display.setBrightness(0x0f); // Установка яркости дисплея  
+     TCCR1A = TCCR1B = TCNT1 = cnt_ovf = 0;  // Сброс таймера
+  TIFR1 |= (1 << TOV1);
+  TIMSK1 = (1 << TOIE0);                  // Прерывание переполнения
+  TCCR1B = (1 << CS10);                   // Старт таймера
+  test();                                 // тест
+  TCCR1B = 0;                             // остановить таймер
+  uint32_t count = TCNT1 - 2;             // минус два такта на действия
+  count += ((uint32_t)cnt_ovf * 0xFFFF);  // с учетом переполнений
+  
 }
 
-
-/*Тут мы считаем паузу между сменой частоты*/
-void PeriodDelay(){
-    gen.EnableOutput(false);
-    periodns = round(1000000000 / freq); //считаем период в наносекундах и округляем до целого числа
-    while (Timer2 < (period / 2))
-    {
-    }
+ISR(TIMER1_OVF_vect)
+{
+    cnt_ovf++;
 }
-
-/*Тут мы выводим на экран текущую частоту*/
-void Display(){
-    display.showNumberDec(freq / 1000);
-}
-
-/*Высчитываем частоту с шагом 200Гц, если частота выше 999кГц возвращаемся на 30кГц*/
-void CalcFreq(){
-    for (freq; freq <= 999900;)
-    {
-        freq = freq + 200;
-        if (freq > 999000)
-        {
-            freq = 30000;
-        }
-        break;
-    }
-}
-
-/*Начинаем передачу сигнала*/
-void SendSine(){
-    gen.ApplySignal(SINE_WAVE, REG0, freq);
-    gen.EnableOutput(true);
-}
-
 /*Выполняем по кругу все команды*/
 void loop(){
   CalcFreq();
