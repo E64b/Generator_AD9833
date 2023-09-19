@@ -15,11 +15,6 @@ uint32_t period = 0;
 volatile uint16_t cnt_ovf = 0;
 inline __attribute__((always_inline))
 
-void test(void){
-    asm("nop");
-}
-
-
 void setup(){
     gen.Begin();
     display.setBrightness(0x0f); // ”становка €ркости диспле€  
