@@ -1,7 +1,7 @@
 #include "main.h"
-/*Начинаем передачу сигнала*/
-void SendSine()
-{
-    gen.ApplySignal(SINE_WAVE, REG0, freq);
-    gen.EnableOutput(true);
+
+/*пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ*/
+void SendSine(){
+    AD.setFrequency(freq, 0);
+    AD.setWave(AD9833_SINE);
 }

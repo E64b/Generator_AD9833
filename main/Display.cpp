@@ -1,6 +1,7 @@
 #include "main.h"
-/*��� �� ������� �� ����� ������� �������*/
-void Display(){
+/*Выводим текущую частоту на дисплей*/
+void Display()
+{
     disp.clear();
     disp.displayInt(freq / 1000);
 }
