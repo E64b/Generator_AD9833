@@ -31,7 +31,7 @@ ISR(TIMER1_OVF_vect){
 
 /*Считаем период текущей частоты и устанавливаем паузу перед следующей*/
 void PeriodDelay(){
-    int Timer = 0;
+    uint32_t Timer = 0;
     AD.setWave(AD9833_OFF);
     periodns = round(1000000000 / freq); //Считаем период в наносекундах
     while (Timer < (periodns / 2))
