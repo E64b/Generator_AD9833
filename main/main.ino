@@ -1,7 +1,7 @@
 #include <GyverTM1637.h>
 #include <AD9833.h>
 #include <Arduino.h>
-#define FNC_PIN 4
+//#define FNC_PIN 4
 #define CLK 2
 #define DIO 3
 
@@ -30,8 +30,7 @@ ISR(TIMER1_OVF_vect){
 }
 
 /*Считаем период текущей частоты и устанавливаем паузу перед следующей*/
-void PeriodDelay()
-{
+void PeriodDelay(){
     int Timer = 0;
     AD.setWave(AD9833_OFF);
     periodns = round(1000000000 / freq); //Считаем период в наносекундах
@@ -51,17 +50,14 @@ void Display(){
 }
 
 /*Отправляем сигнал*/
-void SendSine()
-{
+void SendSine(){
     AD.setFrequency(freq, 0);
     AD.setWave(AD9833_SINE);
 }
 
 /*Перебираем все частоты с шагом 200Гц, при достижении 999кГц возвращаемся обратно на 30кГц*/
-void CalcFreq()
-{
-    for (freq; freq <= 999900;)
-    {
+void CalcFreq(){
+    for (freq; freq <= 999900;){
         freq = freq + 200;
         if (freq > 999000)
         {
@@ -72,8 +68,7 @@ void CalcFreq()
 }
 
 /*Выполняем все по кругу*/
-void loop()
-{
+void loop(){
   CalcFreq();
   Display();
   SendSine();
