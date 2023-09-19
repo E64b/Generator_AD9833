@@ -1,3 +1,4 @@
+#include "main.h"
 /*Начинаем передачу сигнала*/
 void SendSine()
 {
