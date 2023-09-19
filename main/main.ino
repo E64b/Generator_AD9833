@@ -1,7 +1,6 @@
 #include <SPI.h>
 #include <TM1637Display.h> // Подключение библиотеки для управления дисплеем TM1637 
 #include <AD9833.h>
-#include <GyverTimers.h>
 #include <Arduino.h>
 
 #define FNC_PIN 4
@@ -18,27 +17,16 @@ void setup(){
     gen.Begin();
     display.setBrightness(0x0f); // Установка яркости дисплея   
     pinMode(3, OUTPUT);
-    Timer2.setPeriod(4000000);
 }
 
-/*Выполняем по кругу все команды*/
-void loop(){
-  CalcFreq();
-  Display();
-  SendSine();
-  PeriodDelay();
-}
 
 /*Тут мы считаем паузу между сменой частоты*/
 void PeriodDelay(){
-    Timer2.resume();
     gen.EnableOutput(false);
     periodns = round(1000000000 / freq); //считаем период в наносекундах и округляем до целого числа
-    while(Timer2<(period / 2))
+    while (Timer2 < (period / 2))
     {
     }
-    Timer2.restart();
-    Timer2.pause();
 }
 
 /*Тут мы выводим на экран текущую частоту*/
@@ -48,12 +36,14 @@ void Display(){
 
 /*Высчитываем частоту с шагом 200Гц, если частота выше 999кГц возвращаемся на 30кГц*/
 void CalcFreq(){
-    for (freq; freq <= 999900;){
-    freq = freq + 200;
-    if (freq > 999000){
-        freq = 30000;
-    }
-    break;
+    for (freq; freq <= 999900;)
+    {
+        freq = freq + 200;
+        if (freq > 999000)
+        {
+            freq = 30000;
+        }
+        break;
     }
 }
 
@@ -61,5 +51,12 @@ void CalcFreq(){
 void SendSine(){
     gen.ApplySignal(SINE_WAVE, REG0, freq);
     gen.EnableOutput(true);
-    
+}
+
+/*Выполняем по кругу все команды*/
+void loop(){
+  CalcFreq();
+  Display();
+  SendSine();
+  PeriodDelay();
 }
