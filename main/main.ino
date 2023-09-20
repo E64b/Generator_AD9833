@@ -5,12 +5,12 @@
 #define CLK 2
 #define DIO 3
 
-uint16_t freq = 30000;
-uint32_t periodns = 0;
+uint64_t freq;
+uint64_t periodns;
 volatile uint16_t cnt_ovf = 0;
 inline __attribute__((always_inline))
 float Timer;
-uint32_t peri = 0;
+uint64_t peri = 0;
 GyverTM1637 disp(CLK, DIO);
 AD9833 gen(FNC_PIN);
 
@@ -28,12 +28,13 @@ void setup() {
   TIFR1 |= (1 << TOV1);
   TIMSK1 = (1 << TOIE0);
   TCCR1B = (1 << CS10);
+  freq = 30000;
 }
-/*
+
 ISR(TIMER1_OVF_vect) {
   cnt_ovf++;
 }
-*/
+
 
 /*Считаем период текущей частоты и устанавливаем паузу перед следующей*/
 void PeriodDelay()
@@ -60,7 +61,7 @@ void PeriodDelay()
 void loop() 
 {
   /*Считаем частоту*/
-  if (freq <= 999000)
+  if ((freq <= 999000) and (freq >= 30000))
     {
       freq = freq + 200;
     }
@@ -69,11 +70,9 @@ void loop()
       freq = 30000;
     }
 /*Отправляем частоту и выводим на дисплей*/
-    gen.ApplySignal(SINE_WAVE, REG0, freq);
+    gen.ApplySignal(SQUARE_WAVE, REG0, freq);
     gen.EnableOutput(true); 
     disp.clear();
     disp.displayInt(freq / 1000);
-
-    delay(500);
     PeriodDelay();
 }
