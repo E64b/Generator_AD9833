@@ -14,6 +14,7 @@ GyverTM1637 disp(CLK, DIO);
 AD9833 AD;
 
 void setup() {
+  Serial.begin(9600);
   AD.begin(10);
   AD.setWave(AD9833_SINE);
   disp.clear();
@@ -33,12 +34,14 @@ ISR(TIMER1_OVF_vect) {
 void PeriodDelay() {
   uint32_t Timer = 0;
   AD.setWave(AD9833_OFF);
-  periodns = round(1000000000 / freq);  //Считаем период в наносекундах
+  periodns = round(1000000000 / freq);
+  Serial.println(periodns) ; //Считаем период в наносекундах
   while (Timer < (periodns / 2)) {
     TCCR1B = 0;                             // остановить таймер
     uint32_t count = TCNT1 - 2;             // минус два такта на действия
     count += ((uint32_t)cnt_ovf * 0xFFFF);  // с учетом переполнений
     Timer = Timer + (count * (float)(1000000000.0f / F_CPU), 0);
+    Serial.println(Timer);
   }
 }
 
