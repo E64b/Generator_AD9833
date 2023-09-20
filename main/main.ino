@@ -16,12 +16,12 @@ AD9833 AD;
 float Timer;
 
 void setup() {
-  Serial.begin(9600);
-  AD.begin(10);
+  AD.begin(10); //Пин для AD9833
   AD.setWave(AD9833_SINE);
   disp.clear();
   disp.brightness(7);
   disp.point(0);
+  /*Первичная инициализация таймера*/
   TCCR1A = TCCR1B = TCNT1 = cnt_ovf = 0;
   TIFR1 |= (1 << TOV1);
   TIMSK1 = (1 << TOIE0);
