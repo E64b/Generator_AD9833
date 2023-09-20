@@ -14,9 +14,8 @@ uint64_t peri = 0;
 GyverTM1637 disp(CLK, DIO);
 AD9833 gen(FNC_PIN);
 
-
-
-void setup() {
+void setup() 
+{
   gen.Begin();
   gen.ApplySignal(SINE_WAVE, REG0, freq);
   gen.EnableOutput(true);
@@ -31,7 +30,8 @@ void setup() {
   freq = 30000;
 }
 
-ISR(TIMER1_OVF_vect) {
+ISR(TIMER1_OVF_vect) 
+{
   cnt_ovf++;
 }
 
