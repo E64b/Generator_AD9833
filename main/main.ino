@@ -13,6 +13,8 @@ inline __attribute__((always_inline))
 GyverTM1637 disp(CLK, DIO);
 AD9833 AD;
 
+float Timer;
+
 void setup() {
   Serial.begin(9600);
   AD.begin(10);
@@ -31,18 +33,19 @@ ISR(TIMER1_OVF_vect) {
 }
 
 /*Считаем период текущей частоты и устанавливаем паузу перед следующей*/
-void PeriodDelay() {
-  uint32_t Timer = 0;
-  AD.setWave(AD9833_OFF);
-  periodns = round(1000000000 / freq);
-  Serial.println(periodns) ; //Считаем период в наносекундах
-  while (Timer < (periodns / 2)) {
-    TCCR1B = 0;                             // остановить таймер
-    uint32_t count = TCNT1 - 2;             // минус два такта на действия
+void PeriodDelay(){
+  float Timer = 0; //Обнуляем переменную
+  AD.setWave(AD9833_OFF); //Выключаем передачу сигнала
+  periodns = round(1000000000 / freq);//Считаем период в наносекундах
+  TCCR1A = TCCR1B = TCNT1 = cnt_ovf = 0; //Сбрасываем таймер
+  TCCR1B = (1 << CS10); //Запускаем таймер
+  /*Сидим в этом цикле пока не пройдет полупериод*/
+   while (Timer <= (periodns / 2)){    
+    uint32_t count = TCNT1 - 2; // минус два такта на действия
     count += ((uint32_t)cnt_ovf * 0xFFFF);  // с учетом переполнений
-    Timer = Timer + (count * (float)(1000000000.0f / F_CPU), 0);
-    Serial.println(Timer);
+    Timer = Timer + (count * (1000000000.0f / F_CPU)); //Считаем время
   }
+  TCCR1B = 0; // остановить таймер
 }
 
 /*Выводим текущую частоту на дисплей*/
