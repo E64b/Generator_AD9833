@@ -7,9 +7,10 @@
 
 uint32_t freq;
 uint32_t periodns;
+
 float Timer;
 bool Disp = false;
-bool Phase = false;
+bool Phase = true;
 GyverTM1637 disp(CLK, DIO);
 AD9833 gen(FNC_PIN);
 
@@ -35,6 +36,7 @@ void Display()
         disp.displayInt(freq / 1000);
     }
 }
+
 /*Считаем период текущей частоты*/
 void Period()
 {
@@ -49,12 +51,12 @@ void SendSignal()
     gen.EnableOutput(true);
     if (Phase == true)
     {
-        gen.IncrementPhase(REG1, 0);
+        gen.IncrementPhase(REG0, 0); //Ставим фазу по умолчанию
         Phase = false;
     }
     else 
     {
-        gen.IncrementPhase(REG1, 180);
+        gen.IncrementPhase(REG0, 180); //Смещаем фазу на 180
         Phase = true;
     }
 }
@@ -73,10 +75,10 @@ void setup()
 }
 
 /*Выполняем все по кругу*/
-void loop()
-{
+void loop(){
     CalcFreq();
     Display();
     Period();
-    SendSignal();   
+    SendSignal(); 
+    delay(100);
 }
