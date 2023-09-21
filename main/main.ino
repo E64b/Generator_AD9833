@@ -23,8 +23,8 @@ void setup()
     gen.Begin();
     gen.ApplySignal(SQUARE_WAVE, REG1, freq);
     gen.ApplySignal(SQUARE_WAVE, REG0, freq);
-    gen.IncrementPhase(REG0, 0);
-    gen.IncrementPhase(REG1, 180);
+    gen.SetPhase(REG0, 0.0);
+    gen.SetPhase(REG1, 180);
     /*Инициализация дисплея*/
     disp.clear();
     disp.brightness(7);
@@ -56,14 +56,14 @@ void loop(){
     /*Крутим вертим фазу*/
     if (Phase == true)
     {
-        Serial.print("true");
+        Serial.println("true");
            gen.SetFrequency(REG0, freq);
            gen.SetOutputSource(REG0);
            Phase = false;
     }
     else
     {
-        Serial.print("false");
+        Serial.println("false");
             gen.SetFrequency(REG1, freq);
             gen.SetOutputSource(REG1);
             Phase = true;
