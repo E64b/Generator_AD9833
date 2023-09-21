@@ -22,7 +22,6 @@ void setup()
     gen.Begin();
     gen.ApplySignal(SQUARE_WAVE, REG1, freq);
     gen.ApplySignal(SQUARE_WAVE, REG0, freq);
-    gen.EnableOutput(true);
     gen.IncrementPhase(REG0, 0);
     gen.IncrementPhase(REG1, 180);
     /*Инициализация дисплея*/
@@ -34,7 +33,7 @@ void setup()
 /*Выполняем все по кругу*/
 void loop(){
     /*Меняем частоту*/
-    /*
+    
     if ((freq <= 999000) and (freq >= 30000))
     {
         freq = freq + 200;
@@ -45,8 +44,7 @@ void loop(){
         freq = 30000;
         Disp = true;
     }
-    */
-  
+      
     /*Если частота обновилась выводим на дисплей*/
     if (Disp)
     {
@@ -57,17 +55,18 @@ void loop(){
     
     if (Phase == true)
     {
-           gen.EnableOutput(false);
+           //gen.EnableOutput(false);
            gen.SetFrequency(REG0, freq);
            gen.SetOutputSource(REG0);
            Phase = false;
     }
     else
     {
-            gen.EnableOutput(false);
+            //gen.EnableOutput(false);
             gen.SetFrequency(REG1, freq);
             gen.SetOutputSource(REG1);
             Phase = true;
     }
     gen.EnableOutput(true);
+    delay(87);
 }
