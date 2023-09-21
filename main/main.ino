@@ -22,7 +22,7 @@ void setup()
     gen.Begin();
     gen.ApplySignal(SQUARE_WAVE, REG1, freq);
     gen.EnableOutput(true);
-
+    gen.IncrementPhase(REG1, 180);
     /*Инициализация дисплея*/
     disp.clear();
     disp.brightness(7);
@@ -53,8 +53,8 @@ void loop(){
         disp.displayInt(freq / 1000);
         Disp = false;
     }
-
-    /*Отправляем частоту */      
+/*
+         
     if (Phase == true)
     {
         gen.IncrementPhase(REG1, 0); //Ставим фазу по умолчанию
@@ -65,6 +65,7 @@ void loop(){
         gen.IncrementPhase(REG1, 180); //Смещаем фазу на 180
         Phase = true;
     }
+  */
     gen.SetFrequency(REG1, freq);
     gen.SetOutputSource(REG1);
     gen.EnableOutput(true);
