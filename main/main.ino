@@ -20,9 +20,10 @@ void setup()
     Serial.begin(9600);
     /*Инициализация AD9833*/
     gen.Begin();
+    gen.ApplySignal(SQUARE_WAVE, REG1, freq);
     gen.ApplySignal(SQUARE_WAVE, REG0, freq);
-    gen.SetPhase(REG0, 0);
-    gen.SetPhase(REG1, 180);
+    gen.IncrementPhase(REG0, 0);
+    gen.IncrementPhase(REG1, 180);
     gen.EnableOutput(true);
     delayMicroseconds(20);
     /*Инициализация дисплея*/
@@ -40,10 +41,6 @@ void loop(){
         freq = freq + 200;
         Disp = true;
         Serial.println(freq);
-        gen.SetFrequency(REG0, freq);
-        delay(5);
-        gen.SetFrequency(REG1, freq);
-        delay(5);
     }
     else
     {
@@ -62,16 +59,18 @@ void loop(){
     if (Phase == true)    
     {   
         Serial.println("true");
-        Phase = false;
+        gen.SetFrequency(REG0, freq);
         gen.SetOutputSource(REG0);
-        delay(5);
+        Phase = false;
+        delayMicroseconds(10);
     }
     else
     {
         Serial.println("false");       
-        Phase = true;
+        gen.SetFrequency(REG1, freq);
         gen.SetOutputSource(REG1);
-        delay(5);
+        Phase = true;
+        delayMicroseconds(10);
     }
          
 }
