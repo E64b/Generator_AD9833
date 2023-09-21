@@ -57,6 +57,7 @@ void loop(){
     if (Phase == true)
     {
         Serial.println("true");
+        gen.SetPhase(REG0, 0.0);
            gen.SetFrequency(REG0, freq);
            gen.SetOutputSource(REG0);
            Phase = false;
@@ -64,8 +65,9 @@ void loop(){
     else
     {
         Serial.println("false");
-            gen.SetFrequency(REG1, freq);
-            gen.SetOutputSource(REG1);
+        gen.SetPhase(REG0, 180);
+            gen.SetFrequency(REG0, freq);
+            gen.SetOutputSource(REG0);
             Phase = true;
     }
     gen.EnableOutput(true);
