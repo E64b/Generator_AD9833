@@ -20,7 +20,7 @@ void setup()
 {   
     /*Инициализация AD9833*/
     gen.Begin();
-    gen.ApplySignal(HALF_SQUARE_WAVE, REG1, freq);
+    gen.ApplySignal(SQUARE_WAVE, REG1, freq);
     gen.EnableOutput(true);
 
     /*Инициализация дисплея*/
