@@ -41,6 +41,7 @@ void loop(){
         Disp = true;
         Serial.println(freq);
         gen.SetFrequency(REG0, freq);
+        delayMicroseconds(5);
         gen.SetFrequency(REG1, freq);
         delayMicroseconds(5);
     }
