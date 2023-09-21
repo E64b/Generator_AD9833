@@ -5,11 +5,11 @@
 #define CLK 2
 #define DIO 3
 
-uint32_t freq;
+uint32_t freq = 30000;
 uint32_t periodns;
 
 float Timer;
-bool Disp = false;
+bool Disp = true;
 bool Phase = true;
 GyverTM1637 disp(CLK, DIO);
 AD9833 gen(FNC_PIN);
@@ -20,7 +20,7 @@ void setup()
 {   
     /*Инициализация AD9833*/
     gen.Begin();
-    gen.ApplySignal(HALF_SQUARE_WAVE, REG0, freq);
+    gen.ApplySignal(HALF_SQUARE_WAVE, REG1, freq);
     gen.EnableOutput(true);
 
     /*Инициализация дисплея*/
@@ -32,7 +32,7 @@ void setup()
 /*Выполняем все по кругу*/
 void loop(){
     /*Меняем частоту*/
-
+    /*
     if ((freq <= 999000) and (freq >= 30000))
     {
         freq = freq + 200;
@@ -44,9 +44,9 @@ void loop(){
         Disp = true;
     }
 
-
+    */
     /*Если частота обновилась выводим на дисплей*/
-
+    Disp = true; //временно
     if (Disp)
     {
         disp.clear();
@@ -62,19 +62,20 @@ void loop(){
 
 
     /*Отправляем частоту */
-
-    gen.ApplySignal(HALF_SQUARE_WAVE, REG0, freq);
-    gen.EnableOutput(true);
+    
+    
     if (Phase == true)
     {
-        gen.IncrementPhase(REG0, 0); //Ставим фазу по умолчанию
+        gen.IncrementPhase(REG1, 0); //Ставим фазу по умолчанию
         Phase = false;
     }
     else
     {
-        gen.IncrementPhase(REG0, 180); //Смещаем фазу на 180
+        gen.IncrementPhase(REG1, 180); //Смещаем фазу на 180
         Phase = true;
     }
-
+    gen.Reset();
+    gen.ApplySignal(SQUARE_WAVE, REG1, freq);
+    gen.EnableOutput(true);
     delay(100);
 }
