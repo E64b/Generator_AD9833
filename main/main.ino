@@ -24,6 +24,7 @@ void setup()
     gen.SetPhase(REG0, 0);
     gen.SetPhase(REG1, 180);
     gen.EnableOutput(true);
+    delayMicroseconds(20);
     /*Инициализация дисплея*/
     disp.clear();
     disp.brightness(7);
@@ -41,7 +42,7 @@ void loop(){
         Serial.println(freq);
         gen.SetFrequency(REG0, freq);
         gen.SetFrequency(REG1, freq);
-        
+        delayMicroseconds(5);
     }
     else
     {
@@ -62,12 +63,14 @@ void loop(){
         Serial.println("true");
         Phase = false;
         gen.SetOutputSource(REG0);
+        delayMicroseconds(5);
     }
     else
     {
         Serial.println("false");       
         Phase = true;
         gen.SetOutputSource(REG1);
+        delayMicroseconds(5);
     }
          
 }
