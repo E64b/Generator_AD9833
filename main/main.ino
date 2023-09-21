@@ -22,12 +22,10 @@ void setup()
     /*Инициализация AD9833*/
     gen.Begin();
     gen.ApplySignal(SQUARE_WAVE, REG0, freq);
-    gen.SetPhase(REG0, 0.0);
     /*Инициализация дисплея*/
     disp.clear();
     disp.brightness(7);
-    disp.point(0);    
-    gen.SleepMode(true);    
+    disp.point(0);     
 }
 
 /*Выполняем все по кругу*/
@@ -53,24 +51,19 @@ void loop(){
     }
     
     /*Крутим вертим фазу*/
-    if (Phase == true)
+    if (Phase == true)    
     {
-        
         Serial.println("true");
         gen.SetPhase(REG0, 0.0);
-           gen.SetFrequency(REG0, freq);
-           gen.SetOutputSource(REG0);
-           Phase = false;
+        Phase = false;
     }
     else
     {
         Serial.println("false");
         gen.SetPhase(REG0, 180);
-
-            gen.SetFrequency(REG0, freq);
-            gen.SetOutputSource(REG0);
-            Phase = true;
+        Phase = true;
     }
+    gen.SetFrequency(REG0, freq);
     gen.EnableOutput(true);
     delay(87);
 }
