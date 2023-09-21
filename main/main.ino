@@ -33,7 +33,7 @@ void setup()
 void loop(){
     /*Меняем частоту*/
 
-    if ((freq <= 999000) and (freq <= 30000))
+    if ((freq <= 999000) and (freq >= 30000))
     {
         freq = freq + 200;
     }
