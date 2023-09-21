@@ -41,9 +41,9 @@ void loop(){
         Disp = true;
         Serial.println(freq);
         gen.SetFrequency(REG0, freq);
-        delayMicroseconds(5);
+        delay(5);
         gen.SetFrequency(REG1, freq);
-        delayMicroseconds(5);
+        delay(5);
     }
     else
     {
@@ -64,14 +64,14 @@ void loop(){
         Serial.println("true");
         Phase = false;
         gen.SetOutputSource(REG0);
-        delayMicroseconds(5);
+        delay(5);
     }
     else
     {
         Serial.println("false");       
         Phase = true;
         gen.SetOutputSource(REG1);
-        delayMicroseconds(5);
+        delay(5);
     }
          
 }
