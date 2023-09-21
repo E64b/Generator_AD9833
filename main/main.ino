@@ -32,12 +32,12 @@ void setup()
 
 /*Выполняем все по кругу*/
 void loop(){
-    /*Меняем частоту*/
-    
+    /*Меняем частоту*/    
     if ((freq <= 999000) and (freq >= 30000))
     {
         freq = freq + 200;
         Disp = true;
+        delay(100);
     }
     else
     {
@@ -46,23 +46,21 @@ void loop(){
     }
       
     /*Если частота обновилась выводим на дисплей*/
-    if (Disp)
-    {
+    if (Disp){
         disp.clear();
         disp.displayInt(freq / 1000);
         Disp = false;
     }
     
+    /*Крутим вертим фазу*/
     if (Phase == true)
     {
-           //gen.EnableOutput(false);
            gen.SetFrequency(REG0, freq);
            gen.SetOutputSource(REG0);
            Phase = false;
     }
     else
     {
-            //gen.EnableOutput(false);
             gen.SetFrequency(REG1, freq);
             gen.SetOutputSource(REG1);
             Phase = true;
