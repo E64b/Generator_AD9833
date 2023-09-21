@@ -21,7 +21,9 @@ void setup()
     /*Инициализация AD9833*/
     gen.Begin();
     gen.ApplySignal(SQUARE_WAVE, REG1, freq);
+    gen.ApplySignal(SQUARE_WAVE, REG0, freq);
     gen.EnableOutput(true);
+    gen.IncrementPhase(REG0, 0);
     gen.IncrementPhase(REG1, 180);
     /*Инициализация дисплея*/
     disp.clear();
@@ -32,7 +34,7 @@ void setup()
 /*Выполняем все по кругу*/
 void loop(){
     /*Меняем частоту*/
-    
+    /*
     if ((freq <= 999000) and (freq >= 30000))
     {
         freq = freq + 200;
@@ -43,7 +45,7 @@ void loop(){
         freq = 30000;
         Disp = true;
     }
-
+    */
   
     /*Если частота обновилась выводим на дисплей*/
     if (Disp)
@@ -52,19 +54,20 @@ void loop(){
         disp.displayInt(freq / 1000);
         Disp = false;
     }
-/*         
+    
     if (Phase == true)
     {
-        gen.IncrementPhase(REG1, 0); //Ставим фазу по умолчанию
-        Phase = false;
+           gen.EnableOutput(false);
+           gen.SetFrequency(REG0, freq);
+           gen.SetOutputSource(REG0);
+           Phase = false;
     }
     else
     {
-        gen.IncrementPhase(REG1, 180); //Смещаем фазу на 180
-        Phase = true;
+            gen.EnableOutput(false);
+            gen.SetFrequency(REG1, freq);
+            gen.SetOutputSource(REG1);
+            Phase = true;
     }
-  */
-    gen.SetFrequency(REG1, freq);
-    gen.SetOutputSource(REG1);
     gen.EnableOutput(true);
 }
