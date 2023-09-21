@@ -1,5 +1,6 @@
 #include <GyverTM1637.h>
 #include "AD9833.h"
+#include <SPI.h>
 
 #define FNC_PIN 10
 #define CLK 2
@@ -14,14 +15,15 @@ bool Phase = true;
 GyverTM1637 disp(CLK, DIO);
 AD9833 gen(FNC_PIN);
 
-
-
 void setup()
 {   
     Serial.begin(9600);
     /*Инициализация AD9833*/
     gen.Begin();
     gen.ApplySignal(SQUARE_WAVE, REG0, freq);
+    gen.SetPhase(REG0, 0);
+    gen.SetPhase(REG1, 180);
+    gen.EnableOutput(true);
     /*Инициализация дисплея*/
     disp.clear();
     disp.brightness(7);
@@ -30,12 +32,16 @@ void setup()
 
 /*Выполняем все по кругу*/
 void loop(){
+    delay(87);
     /*Меняем частоту*/    
     if ((freq <= 999000) and (freq >= 30000))
     {
         freq = freq + 200;
         Disp = true;
         Serial.println(freq);
+        gen.SetFrequency(REG0, freq);
+        gen.SetFrequency(REG1, freq);
+        
     }
     else
     {
@@ -52,18 +58,16 @@ void loop(){
     
     /*Крутим вертим фазу*/
     if (Phase == true)    
-    {
+    {   
         Serial.println("true");
-        gen.SetPhase(REG0, 0.0);
         Phase = false;
+        gen.SetOutputSource(REG0);
     }
     else
     {
-        Serial.println("false");
-        gen.SetPhase(REG0, 180);
+        Serial.println("false");       
         Phase = true;
+        gen.SetOutputSource(REG1);
     }
-    gen.SetFrequency(REG0, freq);
-    gen.EnableOutput(true);
-    delay(87);
+         
 }
