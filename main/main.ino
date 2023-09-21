@@ -14,52 +14,7 @@ bool Phase = true;
 GyverTM1637 disp(CLK, DIO);
 AD9833 gen(FNC_PIN);
 
-/*Меняем частоту*/
-void CalcFreq()
-{
-    if ((freq <= 999000) and (freq <=30000))
-    {
-        freq = freq + 200;
-    }
-    else
-    {
-        freq = 30000;
-    }
-}
 
-/*Если частота обновилась выводим на дисплей*/
-void Display()
-{
-    if (Disp)
-    {
-        disp.clear();
-        disp.displayInt(freq / 1000);
-    }
-}
-
-/*Считаем период текущей частоты*/
-void Period()
-{
-    periodns = round(1000000000.0f / freq);//Считаем период в наносекундах
-    periodns = periodns / 2; //считаем полупериод
-}
-
-/*Отправляем частоту */
-void SendSignal()
-{
-    gen.ApplySignal(HALF_SQUARE_WAVE, REG0, freq);
-    gen.EnableOutput(true);
-    if (Phase == true)
-    {
-        gen.IncrementPhase(REG0, 0); //Ставим фазу по умолчанию
-        Phase = false;
-    }
-    else 
-    {
-        gen.IncrementPhase(REG0, 180); //Смещаем фазу на 180
-        Phase = true;
-    }
-}
 
 void setup()
 {   
@@ -76,9 +31,47 @@ void setup()
 
 /*Выполняем все по кругу*/
 void loop(){
-    CalcFreq();
-    Display();
-    Period();
-    SendSignal(); 
+    /*Меняем частоту*/
+
+    if ((freq <= 999000) and (freq <= 30000))
+    {
+        freq = freq + 200;
+    }
+    else
+    {
+        freq = 30000;
+    }
+
+
+    /*Если частота обновилась выводим на дисплей*/
+
+    if (Disp)
+    {
+        disp.clear();
+        disp.displayInt(freq / 1000);
+    }
+
+
+    /*Считаем период текущей частоты*/
+
+    periodns = round(1000000000.0f / freq);//Считаем период в наносекундах
+    periodns = periodns / 2; //считаем полупериод
+
+
+    /*Отправляем частоту */
+
+    gen.ApplySignal(HALF_SQUARE_WAVE, REG0, freq);
+    gen.EnableOutput(true);
+    if (Phase == true)
+    {
+        gen.IncrementPhase(REG0, 0); //Ставим фазу по умолчанию
+        Phase = false;
+    }
+    else
+    {
+        gen.IncrementPhase(REG0, 180); //Смещаем фазу на 180
+        Phase = true;
+    }
+
     delay(100);
 }
