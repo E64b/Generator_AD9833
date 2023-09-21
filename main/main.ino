@@ -18,6 +18,7 @@ AD9833 gen(FNC_PIN);
 
 void setup()
 {   
+    Serial.begin(9600);
     /*Инициализация AD9833*/
     gen.Begin();
     gen.ApplySignal(SQUARE_WAVE, REG1, freq);
@@ -37,7 +38,7 @@ void loop(){
     {
         freq = freq + 200;
         Disp = true;
-        delay(100);
+        Serial.println(freq);
     }
     else
     {
@@ -55,12 +56,14 @@ void loop(){
     /*Крутим вертим фазу*/
     if (Phase == true)
     {
+        Serial.print("true");
            gen.SetFrequency(REG0, freq);
            gen.SetOutputSource(REG0);
            Phase = false;
     }
     else
     {
+        Serial.print("false");
             gen.SetFrequency(REG1, freq);
             gen.SetOutputSource(REG1);
             Phase = true;
