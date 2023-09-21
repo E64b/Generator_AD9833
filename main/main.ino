@@ -54,16 +54,7 @@ void loop(){
         Disp = false;
     }
 
-
-    /*Считаем период текущей частоты*/
-
-    periodns = round(1000000000.0f / freq);//Считаем период в наносекундах
-    periodns = periodns / 2; //считаем полупериод
-
-
-    /*Отправляем частоту */
-    
-    
+    /*Отправляем частоту */      
     if (Phase == true)
     {
         gen.IncrementPhase(REG1, 0); //Ставим фазу по умолчанию
@@ -74,8 +65,7 @@ void loop(){
         gen.IncrementPhase(REG1, 180); //Смещаем фазу на 180
         Phase = true;
     }
-    gen.Reset();
-    gen.ApplySignal(SQUARE_WAVE, REG1, freq);
+    gen.SetFrequency(REG1, freq);
+    gen.SetOutputSource(REG1);
     gen.EnableOutput(true);
-    delay(100);
 }
