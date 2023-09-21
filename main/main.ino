@@ -32,7 +32,7 @@ void setup()
 /*Выполняем все по кругу*/
 void loop(){
     /*Меняем частоту*/
-    /*
+    
     if ((freq <= 999000) and (freq >= 30000))
     {
         freq = freq + 200;
@@ -44,17 +44,15 @@ void loop(){
         Disp = true;
     }
 
-    */
+  
     /*Если частота обновилась выводим на дисплей*/
-    Disp = true; //временно
     if (Disp)
     {
         disp.clear();
         disp.displayInt(freq / 1000);
         Disp = false;
     }
-/*
-         
+/*         
     if (Phase == true)
     {
         gen.IncrementPhase(REG1, 0); //Ставим фазу по умолчанию
