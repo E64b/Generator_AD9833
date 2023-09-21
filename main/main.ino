@@ -36,10 +36,12 @@ void loop(){
     if ((freq <= 999000) and (freq >= 30000))
     {
         freq = freq + 200;
+        disp = true;
     }
     else
     {
         freq = 30000;
+        disp = true;
     }
 
 
@@ -49,6 +51,7 @@ void loop(){
     {
         disp.clear();
         disp.displayInt(freq / 1000);
+        disp = false;
     }
 
 
