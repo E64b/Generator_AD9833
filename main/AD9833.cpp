@@ -307,7 +307,7 @@ float AD9833 :: GetResolution ( void ) {
  * Write control register. Setup register based on defined states
  */
 void AD9833 :: WriteControlRegister ( void ) {
-	uint16_t waveForm;
+	uint16_t waveForm = 0;
 	// TODO: can speed things up by keeping a writeReg0 and writeReg1
 	// that presets all bits during the various setup function calls
 	// rather than setting flags. Then we could just call WriteRegister
