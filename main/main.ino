@@ -1,5 +1,3 @@
-#pragma once
-
 #include "GyverTM1637.h"
 #include "GyverTimers.h"
 #include <Arduino.h>
@@ -11,12 +9,12 @@
 #define DIO 3
 
 //
-// PWM OUT D9 PB1 PB2
+// PWM OUT D13
 //
 
 /*Setup FREQ*/
 #define START_FREQ 30000
-#define MAX_FREQ 1000000
+#define MAX_FREQ 998800
 #define STEP_FREQ 200
 #define TIME_STEP 87
 
@@ -44,12 +42,12 @@ void FreqEdit() {
 }
 
 void setup() {
-  Timer1.setFrequency(START_FREQ);
+  //Timer1.setFrequency(START_FREQ);
   Timer1.enableISR(CHANNEL_A);
   disp.clear();
   disp.brightness(7);
   disp.point(0);
-  pinMode(13, OUTPUT);
+  pinMode(9, OUTPUT);
 }
 
 void loop() {
@@ -60,7 +58,8 @@ void loop() {
     FreqEdit();
     Timer1.setFrequency(Freq);
     Timer1.restart();
+    
   }
 }
 
-ISR(TIMER1_A) { digitalWrite(13, !digitalRead(13)); }
+ISR(TIMER1_A) { digitalWrite(9, !digitalRead(9)); }
