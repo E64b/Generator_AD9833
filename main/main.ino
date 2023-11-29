@@ -1,76 +1,66 @@
-#include <GyverTM1637.h>
-#include "AD9833.h"
+#pragma once
+
+#include "GyverTM1637.h"
+#include "GyverTimers.h"
+#include <Arduino.h>
+#include <inttypes.h>
 #include <SPI.h>
 
-#define FNC_PIN 10
+/*Pins for display*/
 #define CLK 2
 #define DIO 3
 
-uint32_t freq = 30000;
-uint32_t periodns;
+//
+// PWM OUT D9 PB1 PB2
+//
 
-float Timer;
-bool Disp = true;
-bool Phase = true;
+/*Setup FREQ*/
+#define START_FREQ 30000
+#define MAX_FREQ 1000000
+#define STEP_FREQ 200
+#define TIME_STEP 87
+
 GyverTM1637 disp(CLK, DIO);
-AD9833 gen(FNC_PIN);
 
-void setup()
-{   
-    Serial.begin(9600);
-    /*Инициализация AD9833*/
-    gen.Begin();
-    gen.ApplySignal(SQUARE_WAVE, REG1, freq);
-    gen.ApplySignal(SQUARE_WAVE, REG0, freq);
-    gen.IncrementPhase(REG0, 0);
-    gen.IncrementPhase(REG1, 180);
-    gen.EnableOutput(true);
-    delayMicroseconds(20);
-    /*Инициализация дисплея*/
+uint32_t Freq = START_FREQ;
+uint32_t Step = 0;
+bool dispRedraw = true;
+
+void Display() {
+  if (dispRedraw) {
     disp.clear();
-    disp.brightness(7);
-    disp.point(0);     
+    disp.displayInt(Freq / 1000);
+    dispRedraw = false;
+  }
 }
 
-/*Выполняем все по кругу*/
-void loop(){
-    delay(87);
-    /*Меняем частоту*/    
-    if ((freq <= 999000) and (freq >= 30000))
-    {
-        freq = freq + 200;
-        Disp = true;
-        Serial.println(freq);
-    }
-    else
-    {
-        freq = 30000;
-        Disp = true;
-    }
-      
-    /*Если частота обновилась выводим на дисплей*/
-    if (Disp){
-        disp.clear();
-        disp.displayInt(freq / 1000);
-        Disp = false;
-    }
-    
-    /*Крутим вертим фазу*/
-    if (Phase == true)    
-    {   
-        Serial.println("true");
-        gen.SetFrequency(REG0, freq);
-        gen.SetOutputSource(REG0);
-        Phase = false;
-        delayMicroseconds(10);
-    }
-    else
-    {
-        Serial.println("false");       
-        gen.SetFrequency(REG1, freq);
-        gen.SetOutputSource(REG1);
-        Phase = true;
-        delayMicroseconds(10);
-    }
-         
+void FreqEdit() {
+  /*Меняем частоту*/
+  if (Freq <= MAX_FREQ && Freq >= START_FREQ) {
+    Freq = Freq + STEP_FREQ;
+  } else {
+    Freq = START_FREQ;
+  }
 }
+
+void setup() {
+  Timer1.setFrequency(START_FREQ);
+  Timer1.enableISR(CHANNEL_A);
+  disp.clear();
+  disp.brightness(7);
+  disp.point(0);
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  Display();
+  if (millis() - Step >= TIME_STEP) {
+    Step = millis();
+    dispRedraw = true;
+    FreqEdit();
+    Timer1.setFrequency(Freq);
+    Timer1.restart();
+  }
+}
+
+ISR(TIMER1_A) { digitalWrite(13, !digitalRead(13)); }
