@@ -36,9 +36,11 @@ void Display() {
 void PhaseEdit() {
   if (phase) {
     Timer1.phaseShift(CHANNEL_A, 0);
+    Serial.println("True");
     phase = false;
   } else {
     Timer1.phaseShift(CHANNEL_A, 180);
+    Serial.println("False");
     phase = true;
   }
 }
