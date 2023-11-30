@@ -1,15 +1,15 @@
 #include "GyverTM1637.h"
 #include "GyverTimers.h"
 #include <Arduino.h>
-#include <SPI.h>
-#include <inttypes.h>
+#include <avr/interrupt.h>
+#include <avr/io.h>
 
 /*Pins for display*/
 #define CLK 2
 #define DIO 3
 
 /*Setup FREQ*/
-#define START_FREQ 30000
+#define START_FREQ 400000
 #define MAX_FREQ 998800
 #define STEP_FREQ 200
 #define TIME_STEP 87
@@ -17,8 +17,8 @@
 
 GyverTM1637 disp(CLK, DIO);
 
-uint32_t freq = START_FREQ;
-uint32_t step = 0;
+volatile uint32_t freq = START_FREQ;
+uint32_t step;
 bool dispRedraw = true;
 bool phase = false;
 
@@ -33,11 +33,11 @@ void Display() {
 void PhaseEdit() {
   if (phase) {
     Timer1.phaseShift(CHANNEL_A, 0);
-    Serial.println("True");
+    Serial.println("Phase true");
     phase = false;
   } else {
-    Timer1.phaseShift(CHANNEL_A, 180);
-    Serial.println("False");
+    Timer1.phaseShift(CHANNEL_A, 360);
+    Serial.println("Phase false");
     phase = true;
   }
 }
@@ -56,7 +56,8 @@ void FreqEdit() {
     Serial.print("freq: ");
     Serial.print(freq);
     Serial.println("hz");
-    Timer1.setFrequency(freq*2);
+    Timer1.setFrequencyFloat(freq * 2);
+    Timer1.restart();
   }
 }
 
@@ -65,16 +66,18 @@ void setup() {
   while (!Serial) {
   }
   Serial.println("Serial OK!");
-  Timer1.setFrequency(freq*2);
+  pinMode(PWM_PIN, OUTPUT);
   disp.clear();
   disp.brightness(7);
   disp.point(0);
-  pinMode(PWM_PIN, OUTPUT);
   step = millis();
+  Timer1.setFrequencyFloat(freq * 2);
   Timer1.outputEnable(CHANNEL_A, PWM_PIN);
+  // Timer1.enableISR(CHANNEL_A);
 }
 
 void loop() {
   Display();
   FreqEdit();
 }
+// ISR(TIMER1_A) { digitalWrite(PWM_PIN, !digitalRead(PWM_PIN)); }
