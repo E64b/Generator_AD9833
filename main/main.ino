@@ -8,15 +8,12 @@
 #define CLK 2
 #define DIO 3
 
-//
-// PWM OUT D9
-//
-
 /*Setup FREQ*/
 #define START_FREQ 30000
 #define MAX_FREQ 998800
 #define STEP_FREQ 200
 #define TIME_STEP 87
+#define PWM_PIN 9
 
 GyverTM1637 disp(CLK, DIO);
 
@@ -49,7 +46,7 @@ void FreqEdit() {
   /*Меняем частоту*/
   if (millis() - step >= TIME_STEP) {
     step = millis();
-    dispRedraw = true;    
+    dispRedraw = true;
     if (freq <= MAX_FREQ && freq >= START_FREQ) {
       freq = freq + STEP_FREQ;
     } else {
@@ -59,7 +56,7 @@ void FreqEdit() {
     Serial.print("freq: ");
     Serial.print(freq);
     Serial.println("hz");
-    Timer1.setFrequency(freq * 2);
+    Timer1.setFrequency(freq*2);
   }
 }
 
@@ -68,15 +65,14 @@ void setup() {
   while (!Serial) {
   }
   Serial.println("Serial OK!");
-  Timer1.enableISR(CHANNEL_A);
+  Timer1.setFrequency(freq*2);
   disp.clear();
   disp.brightness(7);
   disp.point(0);
-  pinMode(9, OUTPUT);
+  pinMode(PWM_PIN, OUTPUT);
   step = millis();
+  Timer1.outputEnable(CHANNEL_A, PWM_PIN);
 }
-
-ISR(TIMER1_A) { digitalWrite(9, !digitalRead(9)); }
 
 void loop() {
   Display();
