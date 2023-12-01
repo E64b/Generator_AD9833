@@ -1,15 +1,17 @@
 #include "GyverTM1637.h"
 #include "GyverTimers.h"
+#include "GyverPWM.h"
 #include <Arduino.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
+
 
 /*Pins for display*/
 #define CLK 2
 #define DIO 3
 
 /*Setup FREQ*/
-#define START_FREQ 400000
+#define START_FREQ 30000
 #define MAX_FREQ 998800
 #define STEP_FREQ 200
 #define TIME_STEP 87
@@ -43,7 +45,7 @@ void PhaseEdit() {
 }
 
 void FreqEdit() {
-  /*Меняем частоту*/
+
   if (millis() - step >= TIME_STEP) {
     step = millis();
     dispRedraw = true;
@@ -73,11 +75,11 @@ void setup() {
   step = millis();
   Timer1.setFrequencyFloat(freq * 2);
   Timer1.outputEnable(CHANNEL_A, PWM_PIN);
-  // Timer1.enableISR(CHANNEL_A);
 }
 
 void loop() {
   Display();
   FreqEdit();
 }
-// ISR(TIMER1_A) { digitalWrite(PWM_PIN, !digitalRead(PWM_PIN)); }
+
+//ISR(TIMER1_A) { digitalWrite(PWM_PIN, !digitalRead(PWM_PIN)); }
