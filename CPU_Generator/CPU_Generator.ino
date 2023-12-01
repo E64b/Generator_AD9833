@@ -7,35 +7,38 @@
 #define CLK 2
 #define DIO 3
 
+/*PWM PIN Timer 1 ch A*/
+#define PWM_PIN 9
+
 /*Setup FREQ*/
 #define START_FREQ 30000
 #define MAX_FREQ 998800
 #define STEP_FREQ 200
-#define TIME_STEP 87
-#define PWM_PIN 9
+#define TIME_STEP 90
 
 GyverTM1637 disp(CLK, DIO);
 
-volatile uint32_t freq = START_FREQ;
+uint32_t freq = START_FREQ;
+uint32_t half_freq;
 uint32_t step;
 bool dispRedraw = true;
 bool phase = false;
 
-uint32_t PWM(float frequency) {
+uint32_t PWM(uint32_t frequency) {
   TCCR1A = 1 << COM1A0;
   TCCR1C = 1 << FOC1A;
   if (frequency < (F_CPU / (65535UL * 16))) {
     TCCR1B = 1 << WGM12 | 1 << WGM13 | 0b011;
-    ICR1 = ((float)F_CPU / (frequency * 128UL)) - 1;
-    return ((float)F_CPU / ((ICR1 + 1) * 128.0f));
+    ICR1 = ((uint32_t)F_CPU / (frequency * 128UL)) - 1;
+    return ((uint32_t)F_CPU / ((ICR1 + 1) * 128.0f));
   } else if (frequency < (F_CPU / (65535UL * 2))) {
     TCCR1B = 1 << WGM12 | 1 << WGM13 | 0b010;
-    ICR1 = ((float)F_CPU / (frequency * 16UL)) - 1;
-    return ((float)F_CPU / ((ICR1 + 1) * 16.0f));
+    ICR1 = ((uint32_t)F_CPU / (frequency * 16UL)) - 1;
+    return ((uint32_t)F_CPU / ((ICR1 + 1) * 16.0f));
   } else {
     TCCR1B = 1 << WGM12 | 1 << WGM13 | 0b001;
-    ICR1 = ((float)F_CPU / (frequency * 2UL)) - 1;
-    return ((float)F_CPU / ((ICR1 + 1) * 2.0f));
+    ICR1 = ((uint32_t)F_CPU / (frequency * 2UL)) - 1;
+    return ((uint32_t)F_CPU / ((ICR1 + 1) * 2.0f));
   }
 }
 
@@ -49,10 +52,10 @@ void Display() {
 
 void PhaseEdit() {
   if (phase) {
-    Serial.println("Phase true");
+    Serial.println('+');
     phase = false;
   } else {
-    Serial.println("Phase false");
+    Serial.println('-');
     phase = true;
   }
 }
@@ -63,14 +66,17 @@ void FreqEdit() {
     dispRedraw = true;
     if (freq <= MAX_FREQ && freq >= START_FREQ) {
       freq = freq + STEP_FREQ;
+      half_freq = freq / 2;
     } else {
       freq = START_FREQ;
-    }
+      half_freq = freq / 2;
+    }    
     PhaseEdit();
-    Serial.print("freq: ");
-    Serial.print(freq);
-    Serial.println("hz");
     PWM(freq);
+    Serial.print(half_freq);
+    Serial.println(" hz");
+    Serial.print(freq);
+    Serial.println(" hz");
   }
 }
 
@@ -80,10 +86,8 @@ void setup() {
   }
   Serial.println("Serial OK!");
   pinMode(PWM_PIN, OUTPUT);
-  disp.clear();
   disp.brightness(7);
   disp.point(0);
-  step = millis();
   PWM(freq);
 }
 
