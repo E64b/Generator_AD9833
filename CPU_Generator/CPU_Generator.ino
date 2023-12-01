@@ -1,6 +1,4 @@
-#include "GyverPWM.h"
 #include "GyverTM1637.h"
-#include "GyverTimers.h"
 #include <Arduino.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
@@ -10,10 +8,10 @@
 #define DIO 3
 
 /*Setup FREQ*/
-#define START_FREQ 0
-#define MAX_FREQ 100000
+#define START_FREQ 30000
+#define MAX_FREQ 998800
 #define STEP_FREQ 200
-#define TIME_STEP 100
+#define TIME_STEP 87
 #define PWM_PIN 9
 
 GyverTM1637 disp(CLK, DIO);
@@ -22,6 +20,24 @@ volatile uint32_t freq = START_FREQ;
 uint32_t step;
 bool dispRedraw = true;
 bool phase = false;
+
+uint32_t PWM(float frequency) {
+  TCCR1A = 1 << COM1A0;
+  TCCR1C = 1 << FOC1A;
+  if (frequency < (F_CPU / (65535UL * 16))) {
+    TCCR1B = 1 << WGM12 | 1 << WGM13 | 0b011;
+    ICR1 = ((float)F_CPU / (frequency * 128UL)) - 1;
+    return ((float)F_CPU / ((ICR1 + 1) * 128.0f));
+  } else if (frequency < (F_CPU / (65535UL * 2))) {
+    TCCR1B = 1 << WGM12 | 1 << WGM13 | 0b010;
+    ICR1 = ((float)F_CPU / (frequency * 16UL)) - 1;
+    return ((float)F_CPU / ((ICR1 + 1) * 16.0f));
+  } else {
+    TCCR1B = 1 << WGM12 | 1 << WGM13 | 0b001;
+    ICR1 = ((float)F_CPU / (frequency * 2UL)) - 1;
+    return ((float)F_CPU / ((ICR1 + 1) * 2.0f));
+  }
+}
 
 void Display() {
   if (dispRedraw) {
@@ -33,18 +49,15 @@ void Display() {
 
 void PhaseEdit() {
   if (phase) {
-    //Timer1.phaseShift(CHANNEL_A, 0);
     Serial.println("Phase true");
     phase = false;
   } else {
-    //Timer1.phaseShift(CHANNEL_A, 360);
     Serial.println("Phase false");
     phase = true;
   }
 }
 
 void FreqEdit() {
-
   if (millis() - step >= TIME_STEP) {
     step = millis();
     dispRedraw = true;
@@ -57,8 +70,7 @@ void FreqEdit() {
     Serial.print("freq: ");
     Serial.print(freq);
     Serial.println("hz");
-    Timer1.setFrequencyFloat(freq * 2);
-    //Timer1.restart();
+    PWM(freq);
   }
 }
 
@@ -72,8 +84,7 @@ void setup() {
   disp.brightness(7);
   disp.point(0);
   step = millis();
-  Timer1.setFrequencyFloat(freq * 2);
-  Timer1.outputEnable(CHANNEL_A, PWM_PIN);
+  PWM(freq);
 }
 
 void loop() {
